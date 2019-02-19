@@ -16,6 +16,7 @@ from os import path, makedirs
 from functools import partial
 
 import numpy as np
+np.set_printoptions(suppress=True)
 
 from concurrent import futures
 
@@ -38,6 +39,10 @@ def add_parser(subparser):
     parser.add_argument("--indexes", help='band indices to include in tile.', nargs="+", type=int, default = [1,2,3,4])
 
     parser.add_argument("files", help="file or files to tile", nargs="+")
+
+    parser.add_argument("--stats",
+                        help = "Produces band-wise mean and std. dev statistics across tiles. ",
+                        action = 'store_true')
 
 
 
@@ -76,7 +81,7 @@ def _write_tile(tile, image, output_dir, tile_size = 512, bands = [1,2,3,4]):
         print(e)
         return tile, False
 
-    return tile, True
+    return tile_path, True
 
 
 def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
@@ -129,6 +134,40 @@ def tile_image(imageFile, output_dir, zoom, cover=None, indexes = None):
     return(responses)
 
 
+def compute_stats(tiles):
+    """
+    Single-band dataset-wide mean and std of tiles
+    """
+
+    bandcount = 0
+    num_pixels = 0
+    with rio.open(tiles[0]) as f:
+        bandcount = f.count
+        num_pixels = f.shape[0] * f.shape[1]
+
+    num_pixels = num_pixels * len(tiles)
+
+
+
+    running_N = np.zeros(bandcount)
+    running_sum = np.zeros(bandcount)
+    running_sos = np.zeros(bandcount)
+
+    print(running_sos, bandcount)
+
+    for file in tiles:
+        with rio.open(file) as img:
+            data = img.read()
+            this_sum = data.sum(axis=(1,2))
+            running_sum += this_sum
+            running_sos += np.square(this_sum)
+
+
+    mean = running_sum / num_pixels
+    std = np.sqrt((running_sos / num_pixels) - (mean * mean))
+
+    return(mean, std)
+
 
 
 def main(args):
@@ -137,4 +176,10 @@ def main(args):
     for image in args.files:
         fbase = path.splitext(path.basename(image))[0]
         image_output = path.join(args.output_dir, fbase)
-        all_tiles.append(tile_image(image, image_output, args.zoom, args.cover, args.indexes))
+        all_tiles.extend(tile_image(image, image_output, args.zoom, args.cover, args.indexes))
+
+    if (args.stats):
+        filenames, _ = list(zip(*all_tiles))
+
+        mean, std = compute_stats(filenames)
+        print(f"mean: {mean}\tstd: {std}")
