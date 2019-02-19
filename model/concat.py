@@ -9,11 +9,12 @@ import argparse
 
 from os import path, makedirs
 
+
 from shutil import copy2
 
 import sys
-sys.path.insert(0, 'model/robosat/')
-from robosat import tiles
+sys.path.insert(0, 'model/robosat_pink/')
+from robosat_pink import tiles
 
 FILENAME_TEMPLATE = "{z}_{x}_{y}_{id}.tif"
 
