@@ -79,6 +79,9 @@ def add_parser(subparser):
     parser.add_argument("--unzip",
                         help = "Unzips .zip archives from Planet API into output_dir",
                         action = 'store_true')
+    parser.add_argument("--stats",
+                        help = "Produces band-wise mean and std. dev statistics for downloaded images. ",
+                        action = 'store_true')
 
 
     parser.set_defaults(func = main)
@@ -172,7 +175,6 @@ def get_images(geometry, date, date_range, output_dir, max_images = None,
     filenames = _download_images(images, geometry, output_dir, aws_profile)
 
     return(filenames)
-
 
 
 

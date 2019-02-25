@@ -158,7 +158,7 @@ def main(args):
 
         train_hist = train(train_loader, num_classes, device, net, optimizer, criterion)
         log.log(
-            "Train    loss: {:.4f}, mIoU: {:.3f}, {} IoU: {:.3f}, MCC: {:.3f}".format(
+            "Train    loss: {:.4f}, mIoU: {:.3f}, {} IoU: {:.3f}, MCC:   {:.3f}".format(
                 train_hist["loss"],
                 train_hist["miou"],
                 config["classes"]["titles"][1],
