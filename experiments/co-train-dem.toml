@@ -4,7 +4,7 @@
 [dataset]
   # The slippy map dataset's base directory.
   aws_profile = "esip"
-  image_bucket = "planet-snowcover-imagery"
+  image_bucket = "planet-snowcover-imagery-dem"
   # regex defines each slippy-map directory, for buckets with many
   imagery_directory_regex = '20180528_.*'
   mask_bucket = "planet-snowcover-snow"
@@ -18,9 +18,9 @@
 # Indicate which dataset sub-directory and bands to take as input.
 # You could so, add several channels blocks to compose your input Tensor. Orders are meaningful.
 [[channels]]
-  bands = [1, 2, 3, 4]
-  mean  = [0.485, 0.456, 0.406, 1.0]
-  std   = [0.229, 0.224, 0.225, 1.0]
+  bands = [1, 2, 3, 4,5]
+  mean  = [0.485, 0.456, 0.406, 1.0,1.0]
+  std   = [0.229, 0.224, 0.225, 1.0,1.0]
 
 
 [model]
@@ -43,7 +43,7 @@
   tile_size = 512
 
   # Total number of epochs to train for.
-  epochs = 10
+  epochs = 50
 
   # Learning rate for the optimizer.
   lr = 0.000025
