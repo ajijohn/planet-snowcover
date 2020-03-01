@@ -64,3 +64,4 @@ aws s3api head-object --bucket planet-snowcover-archive --key  PSScene4Band_2019
 
 3. Tile image + mask
 4. Prediciton + analysis workflow
+
