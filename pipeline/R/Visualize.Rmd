@@ -1,0 +1,105 @@
+---
+title: "R Notebook for visualizing predictions"
+output: html_notebook
+---
+
+Vidualize
+
+```{r}
+library(raster) 
+library(rgdal)
+# ASO
+aso <- raster('data/ASO_3M_SD_USCATE_20180528_binary_merged.tif') 
+# GPredicted
+mlp <- raster('data/20180528_181108_1025_3B_AnalyticMS_SR_clip_merged.tif')
+```
+
+Print the variables to check. E.g.
+```{r}
+aso
+```
+
+
+
+```{r}
+mlp
+```
+
+
+Its the same
+
+Image information and statistics
+The below shows how you can access various properties from a Raster* object (this is the same for any raster data set).
+# Do the bands have the same extent, number of rows and columns, projection, ˓→resolution, and origin
+
+```{r}
+compareRaster(aso,mlp)
+```
+
+
+```{r}
+crs(aso)
+```
+
+```{r}
+crs(mlp)
+```
+
+number of cells, spatial res and number of bands
+
+```{r}
+ncell(mlp)
+## [1] 18880512
+dim(mlp)
+## [1] 3073 6144    1
+# spatial resolution
+res(mlp)
+## [1] 2.145767e-05 1.685681e-05
+# Number of bands
+nlayers(mlp)
+#1
+```
+
+```{r}
+ncell(aso)
+## [1] 18880512
+dim(aso)
+## [1] 3073 6144    1
+# spatial resolution
+res(aso)
+## [1] 2.145767e-05 1.685681e-05
+# Number of bands
+nlayers(aso)
+#1
+```
+
+You can create a RasterStack (an object with multiple layers) from the existing RasterLayer (single band) objects.
+```{r}
+
+s <- stack(mlp,aso)
+```
+
+plot
+
+```{r}
+par(mfrow = c(1,1))
+plot(aso, main = "ASO")
+plot(mlp, main = "ML P")
+```
+
+
+stack preduction and ASO
+
+```{r}
+ twoB<- stack(aso,mlp)
+plotRGB(twoB, axes = TRUE, stretch = "lin", main = "Pred and ASO")
+
+```
+A scatterplot matrix can be helpful in exploring relationships between raster layers. This can be done with the pairs() function of the raster package
+
+```{r}
+pairs(twoB[[1:2]], main = "ASO versus ML P")
+```
+
+
+We are underprecting no-snow, and we are over predicting snow
