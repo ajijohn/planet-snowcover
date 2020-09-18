@@ -63,7 +63,9 @@ from robosat_pink.config import load_config
 # original with 5/28
 #config_location= '/home/ubuntu/planet-snowcover/experiments/co-train.toml'
 # revised with neighboring watershed
-config_location= '/home/ubuntu/planet-snowcover/experiments/co-train-neigh.toml'
+#config_location= '/home/ubuntu/planet-snowcover/experiments/co-train-neigh.toml'
+config_location= '/home/ubuntu/planet-snowcover/experiments/co-train-veg-colo-validate.toml'
+
 config = load_config(config_location)
 
 
@@ -136,7 +138,7 @@ for link in imagery_locs:
             width = int(src.width / scale)
             
             #clip the veg
-            with rio.open('veg.tiff') as origin:
+            with rio.open('veg_Gunnison.tiff') as origin:
 
                 epsg4326_dem = origin.read(1)
                 print('dem meta origin',origin.meta)
@@ -148,7 +150,9 @@ for link in imagery_locs:
                 try:
                     clipped_raster,clipped_transform = mask(origin,[box(*src.bounds)],crop=True,nodata= 0)
                 except ValueError as err:
-                     print('Handling run-time error:', err)
+                    print('Handling run-time error:', err)
+                    continue
+ 
                         
                 print('clipped transform',clipped_transform)
                 clipped_meta = origin.meta.copy()

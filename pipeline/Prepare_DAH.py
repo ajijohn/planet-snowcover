@@ -61,9 +61,9 @@ import tempfile
 sys.path.append("../model/robosat_pink/")
 from robosat_pink.config import load_config
 # original with 5/28
-#config_location= '/home/ubuntu/planet-snowcover/experiments/co-train.toml'
-# revised with neighboring watershed
-config_location= '/home/ubuntu/planet-snowcover/experiments/co-train-neigh.toml'
+config_location= '/home/ubuntu/planet-snowcover/experiments/co-train.toml'
+# revised with neighboring watershed - revered May 1st as dont have DEM or VEG for that
+#config_location= '/home/ubuntu/planet-snowcover/experiments/co-train-neigh.toml'
 config = load_config(config_location)
 
 
@@ -135,8 +135,8 @@ for link in imagery_locs:
             height = int(src.height / scale)
             width = int(src.width / scale)
             
-            #clip the veg
-            with rio.open('veg.tiff') as origin:
+            #clip the dah layer
+            with rio.open('out_dah.tiff') as origin:
 
                 epsg4326_dem = origin.read(1)
                 print('dem meta origin',origin.meta)
@@ -215,7 +215,7 @@ for link in imagery_locs:
                     #convert to float64
                     dem_64 = np.array(dem_r, dtype=numpy.float64)
                     ndvi_64 = np.array(planet_ndvi , dtype=numpy.float64)
-                    new_bucket = s3.Bucket('planet-snowcover-imagery-veg')
+                    new_bucket = s3.Bucket('planet-snowcover-imagery-dah')
                     temp_file = tempfile.TemporaryFile()
                     #with tempfile.NamedTemporaryFile() as tmpfile:
                     #tmpfile.write(data)

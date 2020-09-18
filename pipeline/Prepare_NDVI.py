@@ -60,10 +60,7 @@ import tempfile
 
 sys.path.append("../model/robosat_pink/")
 from robosat_pink.config import load_config
-# original with 5/28
-#config_location= '/home/ubuntu/planet-snowcover/experiments/co-train.toml'
-# revised with neighboring watershed
-config_location= '/home/ubuntu/planet-snowcover/experiments/co-train-neigh.toml'
+config_location= '/home/ubuntu/planet-snowcover/experiments/co-train.toml'
 config = load_config(config_location)
 
 
@@ -135,8 +132,8 @@ for link in imagery_locs:
             height = int(src.height / scale)
             width = int(src.width / scale)
             
-            #clip the veg
-            with rio.open('veg.tiff') as origin:
+            #clip the dem
+            with rio.open('out.tiff') as origin:
 
                 epsg4326_dem = origin.read(1)
                 print('dem meta origin',origin.meta)
@@ -215,7 +212,7 @@ for link in imagery_locs:
                     #convert to float64
                     dem_64 = np.array(dem_r, dtype=numpy.float64)
                     ndvi_64 = np.array(planet_ndvi , dtype=numpy.float64)
-                    new_bucket = s3.Bucket('planet-snowcover-imagery-veg')
+                    new_bucket = s3.Bucket('planet-snowcover-imagery-ndvi')
                     temp_file = tempfile.TemporaryFile()
                     #with tempfile.NamedTemporaryFile() as tmpfile:
                     #tmpfile.write(data)
@@ -229,8 +226,8 @@ for link in imagery_locs:
                             dstr.write_band(2, src.read(2))
                             dstr.write_band(3, src.read(3))
                             dstr.write_band(4, src.read(4))
-                            dstr.write_band(5, dem_64)
-                            #dstr.write_band(6, ndvi_64)
+                            #dstr.write_band(5, dem_64)
+                            dstr.write_band(5, ndvi_64)
                         dstr.close()   
             
                         s3_client.upload_fileobj(tmpfile, new_bucket.name, my_bucket_object.key)  
