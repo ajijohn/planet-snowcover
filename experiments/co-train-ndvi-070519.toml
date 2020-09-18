@@ -4,11 +4,11 @@
 [dataset]
   # The slippy map dataset's base directory.
   aws_profile = "esip"
-  image_bucket = "planet-snowcover-imagery"
+  image_bucket = "planet-snowcover-imagery-ndvi"
   # regex defines each slippy-map directory, for buckets with many
-  imagery_directory_regex = '20180528_.*'
+  imagery_directory_regex = '20190705_.*'
   mask_bucket = "planet-snowcover-snow"
-  mask_directory_regex = "ASO_3M_SD_USCATE_20180528_binary$" # $ = end of string = only dirs (no .tif)
+  mask_directory_regex = "ASO_3M_SD_USCATE_20190705_4326_binary$" # $ = end of string = only dirs (no .tif)
   train_percent = 0.7
 
 [[classes]]
