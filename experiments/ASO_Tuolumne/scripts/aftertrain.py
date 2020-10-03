@@ -6,6 +6,8 @@ from os import path, mkdir
 import tarfile
 from tempfile import mkdtemp, TemporaryDirectory
 from subprocess import Popen, PIPE
+import aiobotocore
+
 
 @click.command()
 @click.argument('result_path')
@@ -18,14 +20,16 @@ def process_training_output(result_path, aws_profile, aws_region, output_dir, ch
     Download and extract model artifacts from from S3 (RESULT_PATH) to local disk, re-upload to parent S3 bucket.
     """
     sess = boto3.Session(profile_name=aws_profile, region_name=aws_region)
-    fs = s3fs.S3FileSystem(session = sess)
+ 
+    #fs = s3fs.S3FileSystem(session = sess)
+    fs = s3fs.S3FileSystem(session=aiobotocore.session.AioSession(profile=aws_profile))
 
     assert "output" in [path.basename(p) for p in fs.ls(result_path)], "Output not found in {}".format(result_path)
 
     tmpdir = TemporaryDirectory(prefix=result_path.replace("/", "_"))
 
     print("Downloading trained model...")
-#     fs.get(path.join(result_path, 'output', 'model.tar.gz'), path.join(tmpdir.name, "model.tar.gz"))
+    #     fs.get(path.join(result_path, 'output', 'model.tar.gz'), path.join(tmpdir.name, "model.tar.gz"))
     p = Popen(['aws', 's3', '--profile', aws_profile, 'cp',
                path.join(result_path, 'output', 'model.tar.gz'),
                path.join(tmpdir.name, 'model.tar.gz')], stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate()

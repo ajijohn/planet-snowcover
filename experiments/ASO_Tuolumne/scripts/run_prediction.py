@@ -14,6 +14,7 @@ import pprint
 import tempfile
 
 from glob import glob
+import aiobotocore
 
 PREDICT_COMMAND = "cd {rsp}; ./rsp predict --create_tif --checkpoint {checkpoint} --aws_profile {aws_profile} --config {config} {idlist_flag} {outputloc}"
 
@@ -57,7 +58,8 @@ def run_prediction(
     config_id = path.splitext(path.basename(config))[0]
 
     temp_dir = tempfile.TemporaryDirectory(prefix=config_id)
-    fs = s3fs.S3FileSystem(session=boto3.Session(profile_name=aws_profile))
+    #fs = s3fs.S3FileSystem(session=boto3.Session(profile_name=aws_profile))
+    fs = s3fs.S3FileSystem(session=aiobotocore.session.AioSession(profile=aws_profile))
 
     # Load TEST ids for prediction.
     test_ids = None
